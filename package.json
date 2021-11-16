@@ -1,0 +1,22 @@
+{
+  "name": "js-chess",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreasthiberg/js-chess.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andreasthiberg/js-chess/issues"
+  },
+  "homepage": "https://github.com/andreasthiberg/js-chess#readme",
+  "devDependencies": {
+    "eslint": "^8.2.0"
+  }
+}
