@@ -21,7 +21,7 @@ function constructBoardArray(){
     boardArray.push(["WQueen","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BQueen"]);
     boardArray.push(["WKing","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKing"]);
     boardArray.push(["WBishop","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BBishop"]);
-    boardArray.push(["WKnightook","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKnight"]);
+    boardArray.push(["WKnight","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKnight"]);
     boardArray.push(["WRook","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BRook"]);
     return boardArray;
 }

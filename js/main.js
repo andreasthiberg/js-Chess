@@ -1,7 +1,9 @@
 import { constructBoard, constructBoardArray} from './modules/constructBoard.js'; 
-import { placePieces, clearBoard } from './modules/updateBoard.js';
+import { placePieces, clearBoard, convertPeasant } from './modules/updateBoard.js';
+import { attemptMovement} from './modules/movements.js';
 
-let pieceSelected = false;
+let boardArray = [];
+
 (function (){
 
     /* Construct chessboard and add eventlisteners to squares. 
@@ -12,18 +14,30 @@ let pieceSelected = false;
         squares[i].addEventListener("click",squareClick);
     }
     
-
     /* Construct chessboard array. [0][0] is square A1, [1,0] is B1, etc. [7,7] is square H8 */
-    let boardArray = constructBoardArray();
+    boardArray = constructBoardArray();
 
     /* Place the visual pieces according to array */ 
     placePieces(boardArray);
-    
+
 })();
 
+let pieceSelectedBool = false;
+let selectedSquareId = "";
+
 function squareClick(event){
-    if(pieceSelected){
-        attemptMove(event);
+    if(pieceSelectedBool){
+        /* Deselect if same square is clicked */
+        if (selectedSquareId === event.target.id){
+            pieceSelectedBool = false;
+            selectedSquareId = "";
+            event.target.classList.remove("selected");
+        } else {
+            if(attemptMove(event)){
+                pieceSelectedBool = false;
+                selectedSquareId = "";
+            }
+        }
     }
     else {
         selectSquare(event);
@@ -34,6 +48,32 @@ function squareClick(event){
 function selectSquare(event){
     if (event.target.classList.contains("occupied")){
         event.target.classList.add("selected");
-        pieceSelected = true;
+        pieceSelectedBool = true;
+        selectedSquareId = event.target.id;
     }
 }
+
+
+function attemptMove(event){
+    let selectedSquare = document.getElementById("selectedPieceId");
+    let selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
+    let targetSquare = event.target;
+    let targetPiece = boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)];
+    
+    /* Stop if it's your own piece */
+    if(selectedPiece.charAt(0) === targetPiece.charAt(0)){
+        return false;
+    }
+
+    /* Tries to move/take another piece */
+        if(attemptMovement(selectedSquareId,targetSquare.id,selectedPiece,boardArray)){
+            boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)] = "Empty";
+            boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)] = selectedPiece;
+            convertPeasant([targetSquare.id.charAt(0),targetSquare.id.charAt(1)],boardArray,selectedPiece);
+            clearBoard();
+            placePieces(boardArray);
+            return true;
+        }
+
+}
+

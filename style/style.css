@@ -7,6 +7,7 @@ body {
 }
 
 .chessboard {
+    user-select: none;
     display: grid;
     width: 800px;
     height: 800px;
@@ -16,8 +17,15 @@ body {
     grid-template-columns: repeat(8,1fr);
 }
 
+.black-square, .white-square {
+    text-align: center;
+    vertical-align: middle;
+    font-family: chessFont;
+    font-size: 85px;
+}
+
 .black-square {
-    background-color: rgb(71, 65, 56);
+    background-color: rgb(70, 96, 67);
 }
 
 .white-square {
@@ -31,3 +39,9 @@ body {
 .selected.white-square {
     background-color: rgb(145, 134, 117);
 }
+
+@font-face {
+    font-family: chessFont;
+    src: url("../fonts/CHEQ_TT.woff")
+}
+
