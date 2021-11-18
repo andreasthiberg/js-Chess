@@ -9,10 +9,9 @@ body {
 .chessboard {
     user-select: none;
     display: grid;
-    width: 800px;
-    height: 800px;
+    width: 600px;
+    height: 600px;
     border: solid;
-    margin-top: 50px;
     grid-template-rows: repeat(8,1fr);
     grid-template-columns: repeat(8,1fr);
 }
@@ -21,7 +20,7 @@ body {
     text-align: center;
     vertical-align: middle;
     font-family: chessFont;
-    font-size: 85px;
+    font-size: 60px;
 }
 
 .black-square {
@@ -45,3 +44,10 @@ body {
     src: url("../fonts/CHEQ_TT.woff")
 }
 
+.turn-indicator {
+    width: 200px;
+    display: inline-block;
+    font-size: 30px;
+    padding-top: 20px;
+    margin-bottom: 20px;
+}

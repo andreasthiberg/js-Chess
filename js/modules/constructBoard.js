@@ -11,18 +11,19 @@ function constructBoard(){
             }
         }
     }
+    
 }
 
 function constructBoardArray(){
     let boardArray = [];
-    boardArray.push(["WRook","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BRook"]);
-    boardArray.push(["WKnight","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKnight"]);
-    boardArray.push(["WBishop","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BBishop"]);
-    boardArray.push(["WQueen","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BQueen"]);
-    boardArray.push(["WKing","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKing"]);
-    boardArray.push(["WBishop","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BBishop"]);
-    boardArray.push(["WKnight","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BKnight"]);
-    boardArray.push(["WRook","WPeasant","Empty","Empty","Empty","Empty","BPeasant","BRook"]);
+    boardArray.push(["WRook","WPawn","Empty","Empty","Empty","Empty","BPawn","BRook"]);
+    boardArray.push(["WKnight","WPawn","Empty","Empty","Empty","Empty","BPawn","BKnight"]);
+    boardArray.push(["WBishop","WPawn","Empty","Empty","Empty","Empty","BPawn","BBishop"]);
+    boardArray.push(["WQueen","WPawn","Empty","Empty","Empty","Empty","BPawn","BQueen"]);
+    boardArray.push(["WKing","WPawn","Empty","Empty","Empty","Empty","BPawn","BKing"]);
+    boardArray.push(["WBishop","WPawn","Empty","Empty","Empty","Empty","BPawn","BBishop"]);
+    boardArray.push(["WKnight","WPawn","Empty","Empty","Empty","Empty","BPawn","BKnight"]);
+    boardArray.push(["WRook","WPawn","Empty","Empty","Empty","Empty","BPawn","BRook"]);
     return boardArray;
 }
 
