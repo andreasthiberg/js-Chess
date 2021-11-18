@@ -7,7 +7,7 @@ function findPieceIndex (piece, boardArray) {
             return [i, foundIndex];
         }
     }
-    return "Index not found";
+    return [];
 }
 
 /* Compares two coordinate-arrays such as [0,2] and [0,1] */
@@ -43,4 +43,27 @@ function minutesAndSeconds (seconds) {
     }
     return [minutes, secondsRemaining];
 }
-export { findPieceIndex, compareCoords, copyBoard, minutesAndSeconds };
+
+function capturedPiecesDisplay (capturedPieces,color){
+    let pieceTypes = ["Queen","Rook","Bishop","Knight","Pawn"];
+    let blackChars = ["w","t","n","j","o"];
+    let whiteChars = ["q","r","b","h","p"];
+    let sortedPieces = [];
+    let matchingPieces = [];
+    for(let i=0; i<pieceTypes.length; i++){
+        matchingPieces = capturedPieces.filter(x => x.includes(pieceTypes[i]));
+        for(let j=0; j<matchingPieces.length; j++){
+            switch(color){
+                case "W":
+                    sortedPieces.push(whiteChars[i]);
+                    break;
+                case "B":
+                    sortedPieces.push(blackChars[i]);
+                    break;
+            }
+            
+        }   
+    }
+    return sortedPieces.join("");
+}
+export { findPieceIndex, compareCoords, copyBoard, minutesAndSeconds, capturedPiecesDisplay };

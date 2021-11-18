@@ -81,9 +81,10 @@ function clearBoard () {
 
 /* Tries to convert Pawn */
 function convertPawn (coords, boardArray, piece) {
+    console.log("QUEEN");
     if (piece === "WPawn" || piece === "BPawn") {
-        if (coords[1] === "7" || coords[1] === "0") {
-            boardArray[coords[0]][coords[1]] = piece.charAt(0) + "Queen";
+        if (coords[1] === 7 || coords[1] === 0) {
+            return true;
         }
     }
 }

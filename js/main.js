@@ -1,7 +1,7 @@
 import { constructBoard, constructBoardArray } from './modules/constructBoard.js';
 import { placePieces, clearBoard, convertPawn } from './modules/updateBoard.js';
-import { attemptMovement, checkForCheck, checkIfDiagonal } from './modules/movements.js';
-import { compareCoords, copyBoard, minutesAndSeconds } from './modules/helperFunctions.js';
+import { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate } from './modules/movements.js';
+import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay } from './modules/helperFunctions.js';
 
 /* Array for storing the board state */
 let boardArray = [];
@@ -10,9 +10,11 @@ let boardArray = [];
 let currentTurn = "W";
 let pieceSelectedBool = false;
 let selectedSquareId = "";
-let checkIndicator = "";
 let gameStarted = false;
 let timerInterval;
+let capturedWhitePieces = [];
+let capturedBlackPieces = [];
+let resultIndicator = document.getElementsByClassName("result-indicator")[0];
 
 /* Timer variables */
 let chosenTime = 0;
@@ -45,7 +47,7 @@ function initializeTimer () {
     for (let i = 0; i < options.length; i++) {
         options[i].addEventListener("click", selectTimerOption);
     }
-    document.getElementsByClassName("timer-button")[0].addEventListener("click", startTimer);
+    document.getElementsByClassName("timer-button")[0].addEventListener("click", startGame);
 }
 
 function selectTimerOption (event) {
@@ -66,10 +68,13 @@ function selectTimerOption (event) {
     event.currentTarget.classList.add("selected-timer-option");
 }
 
-function startTimer () {
+/* Starts a game - with or without timer */
+function startGame () {
+    resultIndicator.innerHTML = "";
     clearInterval(timerInterval);
     currentTurn = "W";
     boardArray = constructBoardArray();
+    clearBoard();
     placePieces(boardArray);
     document.getElementsByClassName("white-timer")[0].classList.add("current-timer");
     document.getElementsByClassName("black-timer")[0].classList.remove("current-timer");
@@ -93,6 +98,7 @@ function startTimer () {
     timerInterval = setInterval(countDown, 1000);
 }
 
+/* Executes every second and changes the active timer */
 function countDown () {
     let timeRemainingMinutesSeconds;
     switch (currentTurn) {
@@ -108,6 +114,15 @@ function countDown () {
         document.getElementsByClassName("black-timer-seconds")[0].innerHTML = timeRemainingMinutesSeconds[1];
         timeRemainingBlack--;
         break;
+    }
+    if (timeRemainingBlack === -1){
+        document.getElementsByClassName("result-indicator")[0].innerHTML = "White has won on time.";
+        gameStarted = false;
+        clearInterval(timerInterval);
+    } else if (timeRemainingWhite === -1){
+        document.getElementsByClassName("result-indicator")[0].innerHTML = "Black has won on time.";
+        gameStarted = false;
+        clearInterval(timerInterval);
     }
 }
 
@@ -158,10 +173,11 @@ function attemptMove (event) {
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
     if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray)) {
-        /* Check for invalid move if checked */
+
+        /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
-        tempBoardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)] = "Empty";
-        tempBoardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)] = selectedPiece;
+        tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
+        tempBoardArray[endCoords[0]][endCoords[1]] = selectedPiece;
         if (currentTurn === "B" && checkForCheck("W", tempBoardArray)) {
             return false;
         } else if (currentTurn === "W" && checkForCheck("B", tempBoardArray)) {
@@ -199,20 +215,42 @@ function attemptMove (event) {
             }
         }
 
+        /* Saves the captured piece to display on the side */
+        if (targetPiece !== "Empty"){
+            let display;
+            switch(targetPiece.charAt(0)){
+                case "W":
+                    capturedWhitePieces.push(targetPiece);
+                    display = capturedPiecesDisplay(capturedWhitePieces,"W");
+                    document.getElementsByClassName("white-pieces-captured","W")[0].innerHTML = display;
+                    break;
+                case "B":
+                    capturedBlackPieces.push(targetPiece);
+                    display = capturedPiecesDisplay(capturedBlackPieces,"B");
+                    document.getElementsByClassName("black-pieces-captured")[0].innerHTML = display;
+                    break;
+            }
+        }
+
         /* Moves piece */
-        boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)] = "Empty";
-        boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)] = selectedPiece;
+        boardArray[startCoords[0]][startCoords[1]] = "Empty";
+        boardArray[endCoords[0]][endCoords[1]] = selectedPiece;
 
         /* Tries to convert Pawns to queens */
-        convertPawn([targetSquare.id.charAt(0), targetSquare.id.charAt(1)], boardArray, selectedPiece);
+        if(convertPawn([endCoords[0], endCoords[1]], boardArray, selectedPiece)){
+            boardArray[endCoords[0]][endCoords[1]] = currentTurn + "Queen";
+        }
 
-        /* Clears html classnames from squares (Occupied) */
+        /* Clears css classnames from squares ("Occupied", "checked" etc) */
         clearBoard();
 
         /* Visually places new pieces on the board */
         placePieces(boardArray);
 
-        /* Change turn and look for check */
+        /* Visualize last move with yellow squares */
+        document.getElementById(startCoords.join("")).classList.add("move-square");
+        document.getElementById(endCoords.join("")).classList.add("move-square");
+        /* Change turn and look for check and check mate */
         if (currentTurn === "W") {
             currentTurn = "B";
             document.getElementsByClassName("black-timer")[0].classList.add("current-timer");
@@ -223,15 +261,23 @@ function attemptMove (event) {
             document.getElementsByClassName("black-timer")[0].classList.remove("current-timer");
         }
         if (checkForCheck("W", boardArray)) {
-            checkIndicator = "W";
-            document.getElementsByClassName("check-indicator")[0].innerHTML = "White check.";
+            let kingIndex = findPieceIndex("BKing",boardArray);
+            let kingSquare = kingIndex.join("");
+            document.getElementById(kingSquare).classList.add("checked-square");
+            if(checkForMate(boardArray,"B","W")){
+                resultIndicator.innerHTML = "White has won by check mate";
+                gameStarted = false;
+            }
+            
         } else if (checkForCheck("B", boardArray)) {
-            checkIndicator = "B";
-            document.getElementsByClassName("check-indicator")[0].innerHTML = "Black check.";
-        } else {
-            checkIndicator = "";
-            document.getElementsByClassName("check-indicator")[0].innerHTML = "";
-        }
+            let kingIndex = findPieceIndex("WKing",boardArray);
+            let kingSquare = kingIndex.join("");
+            document.getElementById(kingSquare).classList.add("checked-square");
+            if(checkForMate(boardArray,"W","B")){
+                resultIndicator.innerHTML = "Black has won by check mate";
+                gameStarted = false;
+            }     
+        } 
         return true;
     }
 }

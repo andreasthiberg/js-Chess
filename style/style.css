@@ -10,11 +10,16 @@ body {
 
 /* Header */
 
+.page-title {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-top: 50px;
+}
+
 /* Grid */
 .chess-grid {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    grid-template-rows: 200px auto;
+    grid-template-rows: 50px auto 100px;
 }
 
 /* Chessboard */
@@ -58,6 +63,14 @@ body {
     background-color: rgb(145, 134, 117);
 }
 
+.checked-square {
+    background-color: rgb(199, 96, 78); 
+}
+
+.move-square {
+    background-color: rgb(221, 170, 81); ;
+}
+
 /* Info */
 
 .turn-indicator {
@@ -69,8 +82,28 @@ body {
 }
 
 .indicators {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.pieces-captured {
+    font-family: chessFont;
+    justify-self: start;
+    font-size: 40px;
+}
+
+.white-pieces-captured {
     grid-column: 2;
     grid-row: 1;
+    align-self: end;
+    margin-bottom: 10px;
+}
+
+.black-pieces-captured {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: top;
+    margin-top: 10px;
 }
 
 /* Options / start game */
@@ -89,12 +122,14 @@ body {
     height: 50px;
     border-radius: 0;
     border: none;
+    font-size: 16px;
 }
 
 .timer-button {
     height: 100px;
     margin-top: 100px;
     grid-column: 1 / 3;
+    font-size: 26px;
 }
 
 .selected-timer-option {
@@ -104,9 +139,10 @@ body {
 .indicators {
     display: grid;
 }
-.check-indicator {
-    align-self: end;
-    margin-bottom: 50px;
+.result-indicator {
+    justify-self: end;
+    margin-right: 60px;
+    margin-top: 350px;
     font-size: 30px;
 }
 
