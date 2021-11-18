@@ -1,22 +1,19 @@
 {
-  "name": "js-chess",
+  "name": "general",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Contains all packages used in the course.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/andreasthiberg/js-chess.git"
+    "linter": "eslint -c .eslintrc.json --ext=mjs,js"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/andreasthiberg/js-chess/issues"
-  },
-  "homepage": "https://github.com/andreasthiberg/js-chess#readme",
+  "keywords": [],
   "devDependencies": {
-    "eslint": "^8.2.0"
+    "eslint": "^7.27.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1"
   }
 }

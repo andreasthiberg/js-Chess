@@ -6,11 +6,33 @@
     <link rel="stylesheet" type="text/css" href="style/style.css">
 </head>
 <body>
-    <h1>Javascript Chess!</h1>
-    <div class="container">
-        <div class="turn-indicator">White begins!</div>
-        <div class="check-indicator">No check</div>
-        <div class="chessboard"></div>
+    <div class="page-header"><h1>Javascript Chess!</h1></div>
+    <div class="chess-grid">
+        <div class="indicators">
+            <div class="check-indicator">Check indicator</div>
+        </div>
+        <div class="board-container">
+            <div class="chessboard"></div>
+        </div>
+        <div class="option-div">
+            <button class="timer-option no-limit selected-timer-option">No time limit</button>
+            <button class="timer-option three-minutes">3 Minutes</button>
+            <button class="timer-option five-minutes">5 Minutes</button>
+            <button class="timer-option ten-minutes">10 Minutes</button>
+            <button class="timer-button">Start game</button>
+        </div>
+        <div class="timer-div">
+            <div class="timer black-timer">
+                <div class="black-timer-minutes timer-number">00</div>
+                <div class="timer-colon">:</div>
+                <div class="black-timer-seconds timer-number">00</div>
+            </div>
+            <div class="timer white-timer">
+                <div class="white-timer-minutes timer-number">00</div>
+                <div class="timer-colon">:</div>
+                <div class="white-timer-seconds timer-number">00</div>
+            </div>
+        </div>
     </div>
     
 </body>

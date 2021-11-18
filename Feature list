@@ -1,8 +1,12 @@
 - Implement en passant. DONE
 - Implement drag and drop.
 - Improve visuals/info. Turn indicator etc.
-- Timed game?
+- Timed game? DONE
+- Make timer more exact
+- Time runs out
 - Score counter?
--Track taken pieces.
+- Track taken pieces.
 - Check mate? Complex.
 - Select conversion
+- Indicate last turn squares.
+- Pause Function
