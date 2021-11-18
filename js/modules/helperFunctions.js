@@ -44,25 +44,24 @@ function minutesAndSeconds (seconds) {
     return [minutes, secondsRemaining];
 }
 
-function capturedPiecesDisplay (capturedPieces,color){
-    let pieceTypes = ["Queen","Rook","Bishop","Knight","Pawn"];
-    let blackChars = ["w","t","n","j","o"];
-    let whiteChars = ["q","r","b","h","p"];
-    let sortedPieces = [];
+function capturedPiecesDisplay (capturedPieces, color) {
+    const pieceTypes = ["Queen", "Rook", "Bishop", "Knight", "Pawn"];
+    const blackChars = ["w", "t", "n", "j", "o"];
+    const whiteChars = ["q", "r", "b", "h", "p"];
+    const sortedPieces = [];
     let matchingPieces = [];
-    for(let i=0; i<pieceTypes.length; i++){
+    for (let i = 0; i < pieceTypes.length; i++) {
         matchingPieces = capturedPieces.filter(x => x.includes(pieceTypes[i]));
-        for(let j=0; j<matchingPieces.length; j++){
-            switch(color){
-                case "W":
-                    sortedPieces.push(whiteChars[i]);
-                    break;
-                case "B":
-                    sortedPieces.push(blackChars[i]);
-                    break;
+        for (let j = 0; j < matchingPieces.length; j++) {
+            switch (color) {
+            case "W":
+                sortedPieces.push(whiteChars[i]);
+                break;
+            case "B":
+                sortedPieces.push(blackChars[i]);
+                break;
             }
-            
-        }   
+        }
     }
     return sortedPieces.join("");
 }

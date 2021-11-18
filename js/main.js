@@ -12,9 +12,9 @@ let pieceSelectedBool = false;
 let selectedSquareId = "";
 let gameStarted = false;
 let timerInterval;
-let capturedWhitePieces = [];
-let capturedBlackPieces = [];
-let resultIndicator = document.getElementsByClassName("result-indicator")[0];
+const capturedWhitePieces = [];
+const capturedBlackPieces = [];
+const resultIndicator = document.getElementsByClassName("result-indicator")[0];
 
 /* Timer variables */
 let chosenTime = 0;
@@ -115,11 +115,11 @@ function countDown () {
         timeRemainingBlack--;
         break;
     }
-    if (timeRemainingBlack === -1){
+    if (timeRemainingBlack === -1) {
         document.getElementsByClassName("result-indicator")[0].innerHTML = "White has won on time.";
         gameStarted = false;
         clearInterval(timerInterval);
-    } else if (timeRemainingWhite === -1){
+    } else if (timeRemainingWhite === -1) {
         document.getElementsByClassName("result-indicator")[0].innerHTML = "Black has won on time.";
         gameStarted = false;
         clearInterval(timerInterval);
@@ -173,7 +173,6 @@ function attemptMove (event) {
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
     if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray)) {
-
         /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
         tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
@@ -216,19 +215,19 @@ function attemptMove (event) {
         }
 
         /* Saves the captured piece to display on the side */
-        if (targetPiece !== "Empty"){
+        if (targetPiece !== "Empty") {
             let display;
-            switch(targetPiece.charAt(0)){
-                case "W":
-                    capturedWhitePieces.push(targetPiece);
-                    display = capturedPiecesDisplay(capturedWhitePieces,"W");
-                    document.getElementsByClassName("white-pieces-captured","W")[0].innerHTML = display;
-                    break;
-                case "B":
-                    capturedBlackPieces.push(targetPiece);
-                    display = capturedPiecesDisplay(capturedBlackPieces,"B");
-                    document.getElementsByClassName("black-pieces-captured")[0].innerHTML = display;
-                    break;
+            switch (targetPiece.charAt(0)) {
+            case "W":
+                capturedWhitePieces.push(targetPiece);
+                display = capturedPiecesDisplay(capturedWhitePieces, "W");
+                document.getElementsByClassName("white-pieces-captured", "W")[0].innerHTML = display;
+                break;
+            case "B":
+                capturedBlackPieces.push(targetPiece);
+                display = capturedPiecesDisplay(capturedBlackPieces, "B");
+                document.getElementsByClassName("black-pieces-captured")[0].innerHTML = display;
+                break;
             }
         }
 
@@ -237,7 +236,7 @@ function attemptMove (event) {
         boardArray[endCoords[0]][endCoords[1]] = selectedPiece;
 
         /* Tries to convert Pawns to queens */
-        if(convertPawn([endCoords[0], endCoords[1]], boardArray, selectedPiece)){
+        if (convertPawn([endCoords[0], endCoords[1]], boardArray, selectedPiece)) {
             boardArray[endCoords[0]][endCoords[1]] = currentTurn + "Queen";
         }
 
@@ -261,23 +260,22 @@ function attemptMove (event) {
             document.getElementsByClassName("black-timer")[0].classList.remove("current-timer");
         }
         if (checkForCheck("W", boardArray)) {
-            let kingIndex = findPieceIndex("BKing",boardArray);
-            let kingSquare = kingIndex.join("");
+            const kingIndex = findPieceIndex("BKing", boardArray);
+            const kingSquare = kingIndex.join("");
             document.getElementById(kingSquare).classList.add("checked-square");
-            if(checkForMate(boardArray,"B","W")){
+            if (checkForMate(boardArray, "B", "W")) {
                 resultIndicator.innerHTML = "White has won by check mate";
                 gameStarted = false;
             }
-            
         } else if (checkForCheck("B", boardArray)) {
-            let kingIndex = findPieceIndex("WKing",boardArray);
-            let kingSquare = kingIndex.join("");
+            const kingIndex = findPieceIndex("WKing", boardArray);
+            const kingSquare = kingIndex.join("");
             document.getElementById(kingSquare).classList.add("checked-square");
-            if(checkForMate(boardArray,"W","B")){
+            if (checkForMate(boardArray, "W", "B")) {
                 resultIndicator.innerHTML = "Black has won by check mate";
                 gameStarted = false;
-            }     
-        } 
+            }
+        }
         return true;
     }
 }

@@ -260,46 +260,45 @@ function checkForCheck (checkingPlayer, boardArray) {
     return false;
 }
 
-function checkForMate(boardArray,checkedPlayer,checkingPlayer){
+function checkForMate (boardArray, checkedPlayer, checkingPlayer) {
     /* First find indexes for pieces of the checked player */
-    let checkedPlayerPieces = [];
-    for(let i = 0; i < boardArray.length; i++){
-        for(let j = 0; j < boardArray[0].length; j++){
-            if (boardArray[i][j].charAt(0) === checkedPlayer){
-                checkedPlayerPieces.push([i,j])
+    const checkedPlayerPieces = [];
+    for (let i = 0; i < boardArray.length; i++) {
+        for (let j = 0; j < boardArray[0].length; j++) {
+            if (boardArray[i][j].charAt(0) === checkedPlayer) {
+                checkedPlayerPieces.push([i, j]);
             }
         }
     }
 
     /* Go through each piece to attempt possible check-solutions */
-    for(let i = 0; i < checkedPlayerPieces.length; i++){
-        let xStart = checkedPlayerPieces[i][0];
-        let yStart = checkedPlayerPieces[i][1];
-        let piece = boardArray[xStart][yStart];
+    for (let i = 0; i < checkedPlayerPieces.length; i++) {
+        const xStart = checkedPlayerPieces[i][0];
+        const yStart = checkedPlayerPieces[i][1];
+        const piece = boardArray[xStart][yStart];
 
         /* Go through every square and move there, then check if it solves the check. */
-        if (lookForCheckSolution(boardArray,[xStart,yStart],piece,checkingPlayer,checkedPlayer)){
+        if (lookForCheckSolution(boardArray, [xStart, yStart], piece, checkingPlayer, checkedPlayer)) {
             return false;
         }
     }
     return true;
 }
 
-function lookForCheckSolution(boardArray,startCoords,piece,checkingPlayer,checkedPlayer){
+function lookForCheckSolution (boardArray, startCoords, piece, checkingPlayer, checkedPlayer) {
     let tempBoardArray;
-    for(let i = 0; i < (boardArray.length);i++){
-        for(let j = 0; j < (boardArray.length);j++){
-            if(attemptMovement(startCoords,[i,j],piece,boardArray) && boardArray[i][j].charAt(0) !== checkedPlayer){
+    for (let i = 0; i < (boardArray.length); i++) {
+        for (let j = 0; j < (boardArray.length); j++) {
+            if (attemptMovement(startCoords, [i, j], piece, boardArray) && boardArray[i][j].charAt(0) !== checkedPlayer) {
                 tempBoardArray = copyBoard(boardArray);
                 tempBoardArray[i][j] = piece;
                 tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
-                if(!checkForCheck(checkingPlayer,tempBoardArray)){
-                     return true;
+                if (!checkForCheck(checkingPlayer, tempBoardArray)) {
+                    return true;
                 }
             }
         }
     }
 }
 
-
-export { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate};
+export { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate };
