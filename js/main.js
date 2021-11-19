@@ -22,6 +22,7 @@ let timeRemainingBlack;
 let timeRemainingWhite;
 let timerInterval;
 let gameStarted = false;
+let currentlyPromoting = false;
 
 (function () {
     /* Construct chessboard and add eventlisteners to squares.
@@ -161,6 +162,9 @@ function squareClick (event) {
 
 /* Make a square the selected one to start a move, if there's a piece. */
 function selectSquare (event) {
+    if (currentlyPromoting){
+        return;
+    }
     const piece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
     if (event.target.classList.contains("occupied") && piece.charAt(0) === currentTurn) {
         event.target.classList.add("selected");
@@ -171,6 +175,9 @@ function selectSquare (event) {
 
 /* Attempt to make a move based on user click */
 function attemptMove (event) {
+    if (currentlyPromoting){
+        return;
+    }
     const selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
     const targetSquare = event.target;
     const targetPiece = boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)];
@@ -250,6 +257,7 @@ function attemptMove (event) {
 
         /* Tries to promote pawn */
         if (promotePawn([endCoords[0], endCoords[1]], selectedPiece)) {
+            currentlyPromoting = true;
             changeTurn();
             promotionShowOrHide(currentTurn);
             promotionCoords = endCoords;
@@ -309,6 +317,7 @@ function promotionChoice(event){
     promotionShowOrHide(optionId.charAt(8));
     lookForCheckOrMate();
     changeTurn();
+    currentlyPromoting = false;
 }
 
 
