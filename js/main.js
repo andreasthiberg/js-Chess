@@ -46,10 +46,9 @@ let currentlyPromoting = false;
     initializeTimer();
 })();
 
-
 /* TIMER AND GAME STARTING FUNCTIONS */
 
-/*Create listeners for timer functions */
+/* Create listeners for timer functions */
 function initializeTimer () {
     const options = document.getElementsByClassName("timer-option");
     for (let i = 0; i < options.length; i++) {
@@ -58,7 +57,7 @@ function initializeTimer () {
     document.getElementsByClassName("timer-button")[0].addEventListener("click", startGame);
 }
 
-/*Changes the time setting */
+/* Changes the time setting */
 function selectTimerOption (event) {
     const buttonClasses = event.currentTarget.classList;
     if (buttonClasses.contains("three-minutes")) {
@@ -135,7 +134,6 @@ function countDown () {
     }
 }
 
-
 /* ACTION FUNCTION */
 
 /* Event triggered when a square is clicked - select or make move */
@@ -162,7 +160,7 @@ function squareClick (event) {
 
 /* Make a square the selected one to start a move, if there's a piece. */
 function selectSquare (event) {
-    if (currentlyPromoting){
+    if (currentlyPromoting) {
         return;
     }
     const piece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
@@ -175,12 +173,12 @@ function selectSquare (event) {
 
 /* Attempt to make a move based on user click */
 function attemptMove (event) {
-    if (currentlyPromoting){
+    if (currentlyPromoting) {
         return;
     }
     const selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
     const targetSquare = event.target;
-    const targetPiece = boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)];
+    let targetPiece = boardArray[targetSquare.id.charAt(0)][targetSquare.id.charAt(1)];
 
     /* Stop if it's your own piece */
     if (selectedPiece.charAt(0) === targetPiece.charAt(0)) {
@@ -191,7 +189,6 @@ function attemptMove (event) {
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
     if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray)) {
-
         /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
         tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
@@ -226,9 +223,11 @@ function attemptMove (event) {
             switch (selectedPiece) {
             case "WPawn":
                 boardArray[endCoords[0]][endCoords[1] - 1] = "Empty";
+                targetPiece = "BPawn";
                 break;
             case "BPawn":
                 boardArray[endCoords[0]][endCoords[1] + 1] = "Empty";
+                targetPiece = "WPawn";
                 break;
             }
         }
@@ -282,36 +281,36 @@ function attemptMove (event) {
 /* PROMOTION FUNCTIONS */
 
 /* Initializes the promotion option picker */
-function promotionInitialize() {
-    let options = document.getElementsByClassName("promotion-option");
-    for(let i = 0; i < options.length; i++){
-        options[i].addEventListener("click",promotionChoice);
+function promotionInitialize () {
+    const options = document.getElementsByClassName("promotion-option");
+    for (let i = 0; i < options.length; i++) {
+        options[i].addEventListener("click", promotionChoice);
     }
     document.getElementsByClassName("black-promotion-div")[0].style.display = "none";
     document.getElementsByClassName("white-promotion-div")[0].style.display = "none";
 }
 
 /* Shows or hides the promotion option box for a player */
-function promotionShowOrHide(player){
-    if (player === "W"){
-        if(document.getElementsByClassName("white-promotion-div")[0].style.display === "inline-block"){
+function promotionShowOrHide (player) {
+    if (player === "W") {
+        if (document.getElementsByClassName("white-promotion-div")[0].style.display === "inline-block") {
             document.getElementsByClassName("white-promotion-div")[0].style.display = "none";
-        } else if(document.getElementsByClassName("white-promotion-div")[0].style.display === "none"){
+        } else if (document.getElementsByClassName("white-promotion-div")[0].style.display === "none") {
             document.getElementsByClassName("white-promotion-div")[0].style.display = "inline-block";
         }
-    } else if (player === "B"){
-        if(document.getElementsByClassName("black-promotion-div")[0].style.display === "inline-block"){
+    } else if (player === "B") {
+        if (document.getElementsByClassName("black-promotion-div")[0].style.display === "inline-block") {
             document.getElementsByClassName("black-promotion-div")[0].style.display = "none";
-        } else if(document.getElementsByClassName("black-promotion-div")[0].style.display === "none"){
+        } else if (document.getElementsByClassName("black-promotion-div")[0].style.display === "none") {
             document.getElementsByClassName("black-promotion-div")[0].style.display = "inline-block";
         }
     }
 }
 
 /* Translates a promotion choice to a piece */
-function promotionChoice(event){
-    let optionId = event.target.id;
-    let pickedPiece = optionId.slice(8);
+function promotionChoice (event) {
+    const optionId = event.target.id;
+    const pickedPiece = optionId.slice(8);
     boardArray[promotionCoords[0]][promotionCoords[1]] = pickedPiece;
     placePieces(boardArray);
     promotionShowOrHide(optionId.charAt(8));
@@ -320,11 +319,10 @@ function promotionChoice(event){
     currentlyPromoting = false;
 }
 
-
 /* HELPER FUNCTIONS */
 
 /* Checks for checks or possible mates. Changes visuals or ends the game */
-function lookForCheckOrMate(){
+function lookForCheckOrMate () {
     if (checkForCheck("W", boardArray)) {
         const kingIndex = findPieceIndex("BKing", boardArray);
         const kingSquare = kingIndex.join("");
@@ -345,7 +343,7 @@ function lookForCheckOrMate(){
 }
 
 /* Changes player turn */
-function changeTurn(){
+function changeTurn () {
     if (currentTurn === "W") {
         currentTurn = "B";
         document.getElementsByClassName("black-timer")[0].classList.add("current-timer");
