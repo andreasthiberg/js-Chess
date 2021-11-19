@@ -79,9 +79,8 @@ function clearBoard () {
     }
 }
 
-/* Tries to convert Pawn */
-function convertPawn (coords, boardArray, piece) {
-    console.log("QUEEN");
+/* Tries to promte Pawn */
+function promotePawn (coords, piece) {
     if (piece === "WPawn" || piece === "BPawn") {
         if (coords[1] === 7 || coords[1] === 0) {
             return true;
@@ -89,4 +88,4 @@ function convertPawn (coords, boardArray, piece) {
     }
 }
 
-export { placePieces, clearBoard, convertPawn };
+export { placePieces, clearBoard, promotePawn };

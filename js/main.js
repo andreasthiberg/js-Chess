@@ -1,5 +1,5 @@
 import { constructBoard, constructBoardArray } from './modules/constructBoard.js';
-import { placePieces, clearBoard, convertPawn } from './modules/updateBoard.js';
+import { placePieces, clearBoard, promotePawn } from './modules/updateBoard.js';
 import { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate } from './modules/movements.js';
 import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay } from './modules/helperFunctions.js';
 
@@ -10,8 +10,8 @@ let boardArray = [];
 let currentTurn = "W";
 let pieceSelectedBool = false;
 let selectedSquareId = "";
-let gameStarted = false;
-let timerInterval;
+let promotionCoords;
+
 const capturedWhitePieces = [];
 const capturedBlackPieces = [];
 const resultIndicator = document.getElementsByClassName("result-indicator")[0];
@@ -20,6 +20,8 @@ const resultIndicator = document.getElementsByClassName("result-indicator")[0];
 let chosenTime = 0;
 let timeRemainingBlack;
 let timeRemainingWhite;
+let timerInterval;
+let gameStarted = false;
 
 (function () {
     /* Construct chessboard and add eventlisteners to squares.
@@ -29,6 +31,9 @@ let timeRemainingWhite;
     for (let i = 0; i < squares.length; i++) {
         squares[i].addEventListener("click", squareClick);
     }
+
+    /* Initializes promotion (pawn reaches end square) option picker */
+    promotionInitialize();
 
     /* Construct chessboard array. [0][0] is square A1, [1,0] is B1, etc. [7,7] is square H8 */
     boardArray = constructBoardArray();
@@ -40,8 +45,10 @@ let timeRemainingWhite;
     initializeTimer();
 })();
 
-/* Timer functions */
 
+/* TIMER AND GAME STARTING FUNCTIONS */
+
+/*Create listeners for timer functions */
 function initializeTimer () {
     const options = document.getElementsByClassName("timer-option");
     for (let i = 0; i < options.length; i++) {
@@ -50,6 +57,7 @@ function initializeTimer () {
     document.getElementsByClassName("timer-button")[0].addEventListener("click", startGame);
 }
 
+/*Changes the time setting */
 function selectTimerOption (event) {
     const buttonClasses = event.currentTarget.classList;
     if (buttonClasses.contains("three-minutes")) {
@@ -126,6 +134,9 @@ function countDown () {
     }
 }
 
+
+/* ACTION FUNCTION */
+
 /* Event triggered when a square is clicked - select or make move */
 function squareClick (event) {
     if (!gameStarted) {
@@ -173,6 +184,7 @@ function attemptMove (event) {
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
     if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray)) {
+
         /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
         tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
@@ -235,9 +247,10 @@ function attemptMove (event) {
         boardArray[startCoords[0]][startCoords[1]] = "Empty";
         boardArray[endCoords[0]][endCoords[1]] = selectedPiece;
 
-        /* Tries to convert Pawns to queens */
-        if (convertPawn([endCoords[0], endCoords[1]], boardArray, selectedPiece)) {
-            boardArray[endCoords[0]][endCoords[1]] = currentTurn + "Queen";
+        /* Tries to promote pawn */
+        if (promotePawn([endCoords[0], endCoords[1]], selectedPiece)) {
+            promotionShowOrHide(currentTurn);
+            promotionCoords = endCoords;
         }
 
         /* Clears css classnames from squares ("Occupied", "checked" etc) */
@@ -249,33 +262,86 @@ function attemptMove (event) {
         /* Visualize last move with yellow squares */
         document.getElementById(startCoords.join("")).classList.add("move-square");
         document.getElementById(endCoords.join("")).classList.add("move-square");
-        /* Change turn and look for check and check mate */
-        if (currentTurn === "W") {
-            currentTurn = "B";
-            document.getElementsByClassName("black-timer")[0].classList.add("current-timer");
-            document.getElementsByClassName("white-timer")[0].classList.remove("current-timer");
-        } else {
-            currentTurn = "W";
-            document.getElementsByClassName("white-timer")[0].classList.add("current-timer");
-            document.getElementsByClassName("black-timer")[0].classList.remove("current-timer");
-        }
-        if (checkForCheck("W", boardArray)) {
-            const kingIndex = findPieceIndex("BKing", boardArray);
-            const kingSquare = kingIndex.join("");
-            document.getElementById(kingSquare).classList.add("checked-square");
-            if (checkForMate(boardArray, "B", "W")) {
-                resultIndicator.innerHTML = "White has won by check mate";
-                gameStarted = false;
-            }
-        } else if (checkForCheck("B", boardArray)) {
-            const kingIndex = findPieceIndex("WKing", boardArray);
-            const kingSquare = kingIndex.join("");
-            document.getElementById(kingSquare).classList.add("checked-square");
-            if (checkForMate(boardArray, "W", "B")) {
-                resultIndicator.innerHTML = "Black has won by check mate";
-                gameStarted = false;
-            }
-        }
+
+        lookForCheckOrMate();
+        changeTurn();
+
         return true;
+    }
+}
+
+/* PROMOTION FUNCTIONS */
+
+/* Initializes the promotion option picker */
+function promotionInitialize() {
+    let options = document.getElementsByClassName("promotion-option");
+    for(let i = 0; i < options.length; i++){
+        options[i].addEventListener("click",promotionChoice);
+    }
+    document.getElementsByClassName("black-promotion-div")[0].style.display = "none";
+    document.getElementsByClassName("white-promotion-div")[0].style.display = "none";
+}
+
+/* Shows or hides the promotion option box for a player */
+function promotionShowOrHide(player){
+    if (player === "W"){
+        if(document.getElementsByClassName("white-promotion-div")[0].style.display === "inline-block"){
+            document.getElementsByClassName("white-promotion-div")[0].style.display = "none";
+        } else if(document.getElementsByClassName("white-promotion-div")[0].style.display === "none"){
+            document.getElementsByClassName("white-promotion-div")[0].style.display = "inline-block";
+        }
+    } else if (player === "B"){
+        if(document.getElementsByClassName("black-promotion-div")[0].style.display === "inline-block"){
+            document.getElementsByClassName("black-promotion-div")[0].style.display = "none";
+        } else if(document.getElementsByClassName("black-promotion-div")[0].style.display === "none"){
+            document.getElementsByClassName("black-promotion-div")[0].style.display = "inline-block";
+        }
+    }
+}
+
+/* Translates a promotion choice to a piece */
+function promotionChoice(event){
+    let optionId = event.target.id;
+    let pickedPiece = optionId.slice(8);
+    boardArray[promotionCoords[0]][promotionCoords[1]] = pickedPiece;
+    placePieces(boardArray);
+    promotionShowOrHide(optionId.charAt(8));
+    lookForCheckOrMate();
+}
+
+
+/* HELPER FUNCTIONS */
+
+/* Checks for checks or possible mates. Changes visuals or ends the game */
+function lookForCheckOrMate(){
+    if (checkForCheck("W", boardArray)) {
+        const kingIndex = findPieceIndex("BKing", boardArray);
+        const kingSquare = kingIndex.join("");
+        document.getElementById(kingSquare).classList.add("checked-square");
+        if (checkForMate(boardArray, "B", "W")) {
+            resultIndicator.innerHTML = "White has won by check mate";
+            gameStarted = false;
+        }
+    } else if (checkForCheck("B", boardArray)) {
+        const kingIndex = findPieceIndex("WKing", boardArray);
+        const kingSquare = kingIndex.join("");
+        document.getElementById(kingSquare).classList.add("checked-square");
+        if (checkForMate(boardArray, "W", "B")) {
+            resultIndicator.innerHTML = "Black has won by check mate";
+            gameStarted = false;
+        }
+    }
+}
+
+/* Changes player turn */
+function changeTurn(){
+    if (currentTurn === "W") {
+        currentTurn = "B";
+        document.getElementsByClassName("black-timer")[0].classList.add("current-timer");
+        document.getElementsByClassName("white-timer")[0].classList.remove("current-timer");
+    } else {
+        currentTurn = "W";
+        document.getElementsByClassName("white-timer")[0].classList.add("current-timer");
+        document.getElementsByClassName("black-timer")[0].classList.remove("current-timer");
     }
 }

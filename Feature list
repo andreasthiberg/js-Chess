@@ -1,12 +1,14 @@
 * Implement en passant. 
-- Implement drag and drop.* 
+- Implement drag and drop.
 * Improve visuals/info. Turn indicator etc.
 * Timed game? 
 - Make timer more exact
-- Time runs out
+* Time runs out
 - Score counter?
-- Track taken pieces.
-- Check mate? Complex.
-- Select conversion
+* Track taken pieces.
+* Check mate?
+* Select conversion
 * Indicate last turn squares. 
 - Pause Function
+- Show piece value difference
+- Improve colors/shades (including for selected/checked)

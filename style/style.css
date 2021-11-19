@@ -146,11 +146,11 @@ body {
     font-size: 30px;
 }
 
-/* Timers */
+/* RIGHT SIDE */
 
-.timer-div {
+.right-div {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 70px 1fr 1fr 70px;
     width: 200px;
     grid-row: 2;
     grid-column: 3;
@@ -158,6 +158,7 @@ body {
     margin-left: 50px;
 }
 
+/* Timers*/
 .timer {
     font-size: 50px;
     display: grid;
@@ -175,4 +176,36 @@ body {
 
 .white-timer {
     align-self: end;
+    grid-row: 4;
 }
+
+/*promotion pickers */
+.promotion-div {
+    font-size: 0;
+    height: 75px;
+    width: 300px;
+    display: none;
+}
+
+.white-promotion-div {
+    grid-row: 2;
+}
+
+.black-promotion-div {
+    grid-row: 3;
+    align-self: end;
+}
+
+.promotion-option {
+    width: 75px;
+    height: 75px;
+    display: inline-block;
+    font-family: chessFont;
+    font-size: 60px;
+}
+
+.promotion-option:hover {
+    background-color: rgb(148, 216, 125);
+}
+
+
