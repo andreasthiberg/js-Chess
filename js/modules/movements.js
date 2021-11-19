@@ -47,13 +47,13 @@ function moveKing (start, end, piece, boardArray) {
     /* Checks for valid castling move. Includes checks for threatened intermediary squares via castlingCheckControl(). */
     if (piece === "WKing") {
         if (compareCoords(end, [2, 0]) && checkIfLine(start, [0, 0], boardArray) && wCastleAllowed[0]) {
-            if (castlingCheckControl(end, "W", "B", boardArray)) {
+            if (castlingCheckControl(start, end, "W", "B", boardArray)) {
                 return false;
             }
             wCastleAllowed = [false, false];
             return true;
         } else if (compareCoords(end, [6, 0]) && checkIfLine(start, [7, 0], boardArray) && wCastleAllowed[1]) {
-            if (castlingCheckControl(end, "W", "B", boardArray)) {
+            if (castlingCheckControl(start, end, "W", "B", boardArray)) {
                 return false;
             }
             wCastleAllowed = [false, false];
@@ -61,13 +61,13 @@ function moveKing (start, end, piece, boardArray) {
         }
     } else if (piece === "BKing") {
         if (compareCoords(end, [2, 7]) && checkIfLine(start, [0, 7], boardArray) && bCastleAllowed[0]) {
-            if (castlingCheckControl(end, "B", "W", boardArray)) {
+            if (castlingCheckControl(start, end, "B", "W", boardArray)) {
                 return false;
             }
             bCastleAllowed = [false, false];
             return true;
         } else if (compareCoords(end, [6, 7]) && checkIfLine(start, [7, 7], boardArray) & bCastleAllowed[1]) {
-            if (castlingCheckControl(end, "B", "W", boardArray)) {
+            if (castlingCheckControl(start, end, "B", "W", boardArray)) {
                 return false;
             }
             bCastleAllowed = [false, false];
@@ -91,25 +91,37 @@ function moveKing (start, end, piece, boardArray) {
 }
 
 /* Helper function to check if intermediate squares are threatened when castling */
-function castlingCheckControl (endCoords, checkedPlayer, checkingPlayer, boardArray) {
-    const tempCastlingBoard = copyBoard(boardArray);
+function castlingCheckControl (startCoords, endCoords, checkedPlayer, checkingPlayer, boardArray) {
+    let boardsToTest = [copyBoard(boardArray)];
+    let boardWithoutKing = copyBoard(boardArray);
+    boardWithoutKing[startCoords[0]][startCoords[1]] = "Empty";
     const yCoord = endCoords[1];
     const xCoord = endCoords[0];
+    let tempBoardVar;
 
     /* Castling Queen's or King's side */
     if (xCoord === 2) {
-        tempCastlingBoard[1][yCoord] = checkedPlayer + "King";
-        tempCastlingBoard[3][yCoord] = checkedPlayer + "King";
+        for(let i=1;i<4;i++){
+            tempBoardVar = copyBoard(boardWithoutKing);
+            tempBoardVar[i][yCoord] = checkedPlayer + "King";
+            boardsToTest.push(tempBoardVar);
+        }
     } else if (xCoord === 6) {
-        tempCastlingBoard[5][yCoord] = checkedPlayer + "King";
+        for(let i=5;i<7;i++){
+            tempBoardVar = copyBoard(boardWithoutKing);
+            tempBoardVar[i][yCoord] = checkedPlayer + "King";
+            boardsToTest.push(tempBoardVar);
+        }
     }
 
     /* Check if any intermediary squares can be checked */
-    if (checkForCheck(checkingPlayer, tempCastlingBoard)) {
-        return true;
-    } else {
-        return false;
+
+    for(let i=0;i<boardsToTest.length;i++){
+        if (checkForCheck(checkingPlayer, boardsToTest[i])){
+            return true;
+        }
     }
+    return false;
 }
 
 /* Normal, two-step and capture pawn movements. Enables or disables en passant based on move type. */
