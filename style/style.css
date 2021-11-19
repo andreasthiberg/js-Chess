@@ -10,10 +10,38 @@ body {
 
 /* Header */
 
+h1 {
+    margin-bottom: 20px;
+    }
+
 .page-title {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     margin-top: 50px;
 }
+
+.github-button {
+    display: inline-block;
+    background-color: rgb(157, 221, 255);
+    width: 160px;
+    padding: 5px;
+    font-size: 20px;
+}
+
+.github-button:hover {
+    background-color: rgb(74, 132, 164);
+}
+
+.github-logo {
+    height: 20px;
+    margin-right: 10px;
+}
+
+.github-link {
+    text-decoration: none;
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 
 /* Grid */
 .chess-grid {
@@ -166,12 +194,12 @@ body {
     width: 135px;
     height: 50px;
     padding: 10px;
-    background-color: azure;
+    background-color: rgb(238, 242, 226);
     
 }
 
 .current-timer {
-    background-color: rgb(211, 255, 199);
+    background-color: rgb(115, 181, 96);
 }
 
 .white-timer {
@@ -185,6 +213,7 @@ body {
     height: 75px;
     width: 300px;
     display: none;
+    margin-top: 20px;
 }
 
 .white-promotion-div {
@@ -205,7 +234,7 @@ body {
 }
 
 .promotion-option:hover {
-    background-color: rgb(148, 216, 125);
+    background-color: rgb(115, 181, 96);    
 }
 
 

@@ -246,9 +246,11 @@ function attemptMove (event) {
         /* Moves piece */
         boardArray[startCoords[0]][startCoords[1]] = "Empty";
         boardArray[endCoords[0]][endCoords[1]] = selectedPiece;
+        changeTurn();
 
         /* Tries to promote pawn */
         if (promotePawn([endCoords[0], endCoords[1]], selectedPiece)) {
+            changeTurn();
             promotionShowOrHide(currentTurn);
             promotionCoords = endCoords;
         }
@@ -264,7 +266,6 @@ function attemptMove (event) {
         document.getElementById(endCoords.join("")).classList.add("move-square");
 
         lookForCheckOrMate();
-        changeTurn();
 
         return true;
     }
@@ -307,6 +308,7 @@ function promotionChoice(event){
     placePieces(boardArray);
     promotionShowOrHide(optionId.charAt(8));
     lookForCheckOrMate();
+    changeTurn();
 }
 
 
