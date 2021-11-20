@@ -1,15 +1,14 @@
 import { constructBoard, constructBoardArray } from './modules/constructBoard.js';
 import { placePieces, clearBoard, promotePawn } from './modules/updateBoard.js';
 import { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate } from './modules/movements.js';
-import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay } from './modules/helperFunctions.js';
+import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay, getPieceFontLetter} from './modules/helperFunctions.js';
 
 /* Array for storing the board state */
 let boardArray = [];
 
 /* Game variables */
 let currentTurn = "W";
-let pieceSelectedBool = false;
-let selectedSquareId = "";
+let selectedSquareId = null;
 let promotionCoords;
 
 const capturedWhitePieces = [];
@@ -25,12 +24,16 @@ let gameStarted = false;
 let currentlyPromoting = false;
 
 (function () {
+
     /* Construct chessboard and add eventlisteners to squares.
     Squares have IDs of 00 to 77, corresponding to A1 to H8 */
     constructBoard();
     const squares = document.querySelectorAll(".white-square,.black-square");
     for (let i = 0; i < squares.length; i++) {
-        squares[i].addEventListener("click", squareClick);
+        squares[i].addEventListener("mousedown", mouseDown);
+        squares[i].addEventListener("mouseup", mouseUp);
+        squares[i].addEventListener("mouseover", mouseOver);
+        squares[i].addEventListener("mouseout", mouseOut);
     }
 
     /* Initializes promotion (pawn reaches end square) option picker */
@@ -133,29 +136,81 @@ function countDown () {
         clearInterval(timerInterval);
     }
 }
+/* ACTION FUNCTIONS */
 
-/* ACTION FUNCTION */
+let draggingEvent; 
+let draggingHoverEvent;
+let currentlyDragging = false;
+let firstClick = true; 
 
-/* Event triggered when a square is clicked - select or make move */
-function squareClick (event) {
+/* Drag and drop and clicking squares - select, deselects or moves */
+
+function mouseDown(event){
     if (!gameStarted) {
-        return;
+        /* return; */
     }
-    if (pieceSelectedBool) {
-        /* Deselect if same square is clicked */
-        if (selectedSquareId === event.target.id) {
-            pieceSelectedBool = false;
-            selectedSquareId = "";
-            event.target.classList.remove("selected");
-        } else {
-            if (attemptMove(event)) {
-                pieceSelectedBool = false;
-                selectedSquareId = "";
+
+    let targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
+    if(targetPiece.charAt(0) === currentTurn){
+        selectSquare(event);
+        currentlyDragging = true;
+        document.getElementById('drag-piece').style.display = "inline";
+        document.getElementById('drag-piece').innerHTML = getPieceFontLetter(targetPiece);
+
+        switch(currentTurn){
+            case "W":
+                document.getElementById('drag-piece').style.color = "white";
+                break;
+            case "B":
+                document.getElementById('drag-piece').style.color = "black";
+                break;
+        }
+
+        draggingEvent = document.addEventListener('mousemove', function(event){
+            document.getElementById('drag-piece').style.left = (event.pageX - 38) + "px";
+            document.getElementById('drag-piece').style.top = (event.pageY - 40) + "px";
+        });   
+    }
+}
+
+function mouseUp (event) {
+    if (!gameStarted) {
+        /*return;*/
+    }
+    if (currentlyDragging) {
+        removeEventListener("mousemove", draggingEvent);
+        document.getElementById('drag-piece').style.display = "none";
+        currentlyDragging = false;
+        if (selectedSquareId === event.target.id){
+            if(!firstClick){
+                selectedSquareId = null;
+                event.target.classList.remove("selected");
+                firstClick = true;
+            } else {
+                firstClick = false;
             }
         }
-    } else {
-        selectSquare(event);
     }
+    if (selectedSquareId !== null && selectedSquareId !== event.target.id && attemptMove(event)) {
+        selectedSquareId = null;
+    }
+}
+
+function mouseOver(event){
+    if(currentlyDragging){
+        const selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
+        const targetSquare = event.target;
+        const targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
+        const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
+        const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
+        if (targetPiece.charAt(0) !== currentTurn && attemptMovement(startCoords,endCoords,selectedPiece,boardArray)){
+            event.target.classList.add("possible-move");
+        }
+    }
+}
+
+function mouseOut(event){
+    event.target.classList.remove("possible-move");
 }
 
 /* Make a square the selected one to start a move, if there's a piece. */
@@ -166,7 +221,6 @@ function selectSquare (event) {
     const piece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
     if (event.target.classList.contains("occupied") && piece.charAt(0) === currentTurn) {
         event.target.classList.add("selected");
-        pieceSelectedBool = true;
         selectedSquareId = event.target.id;
     }
 }
@@ -217,6 +271,8 @@ function attemptMove (event) {
                 boardArray[7][7] = "Empty";
             }
         }
+
+        /* Disables
 
         /* En passant capture if valid en passant */
         if (checkIfDiagonal(startCoords, endCoords, boardArray) && targetPiece === "Empty") {

@@ -65,4 +65,29 @@ function capturedPiecesDisplay (capturedPieces, color) {
     }
     return sortedPieces.join("");
 }
-export { findPieceIndex, compareCoords, copyBoard, minutesAndSeconds, capturedPiecesDisplay };
+
+function getPieceFontLetter(piece) {
+    let pieceWithoutColor = piece.slice(1);
+    switch (pieceWithoutColor) {
+        case "King":
+            return "l";
+            break;
+        case "Queen":
+            return "w";
+            break;
+        case "Rook":
+            return "t";
+            break;
+        case "Bishop":
+            return "n";
+            break;
+        case "Knight":
+            return "j";
+            break;
+        case "Pawn":
+            return "o";
+            break;
+    }
+    return "No match";
+}
+export { findPieceIndex, compareCoords, copyBoard, minutesAndSeconds, capturedPiecesDisplay, getPieceFontLetter };

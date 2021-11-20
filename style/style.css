@@ -68,11 +68,11 @@ h1 {
     grid-template-columns: repeat(8,1fr);
 }
 
-.black-square, .white-square {
+.black-square, .white-square, #drag-piece {
     text-align: center;
     vertical-align: middle;
     font-family: chessFont;
-    font-size: 60px;
+    font-size: 60px;    
 }
 
 .black-square {
@@ -96,7 +96,11 @@ h1 {
 }
 
 .move-square {
-    background-color: rgb(221, 170, 81); ;
+    background-color: rgb(221, 170, 81);
+}
+
+.possible-move {
+    background-color: rgb(221, 170, 81);
 }
 
 /* Info */
@@ -237,4 +241,10 @@ h1 {
     background-color: rgb(115, 181, 96);    
 }
 
-
+/* Drag and drop */
+#drag-piece {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    pointer-events: none;
+}

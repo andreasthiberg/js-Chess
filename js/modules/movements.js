@@ -161,7 +161,7 @@ function movePawn (start, end, piece, boardArray) {
 
 function moveRook (start, end, boardArray, piece) {
     if (checkIfLine(start, end, boardArray)) {
-        /* Changes castling-bools based on which rook moves */
+        /* Changes castling-bools based on which rook moves
         if (piece.charAt(0) === "W") {
             if (start[0] === 0) {
                 wCastleAllowed[0] = false;
@@ -175,6 +175,7 @@ function moveRook (start, end, boardArray, piece) {
                 bCastleAllowed[1] = false;
             }
         }
+        */
         return true;
     }
     return false;
