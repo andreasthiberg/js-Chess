@@ -66,27 +66,21 @@ function capturedPiecesDisplay (capturedPieces, color) {
     return sortedPieces.join("");
 }
 
-function getPieceFontLetter(piece) {
-    let pieceWithoutColor = piece.slice(1);
+function getPieceFontLetter (piece) {
+    const pieceWithoutColor = piece.slice(1);
     switch (pieceWithoutColor) {
-        case "King":
-            return "l";
-            break;
-        case "Queen":
-            return "w";
-            break;
-        case "Rook":
-            return "t";
-            break;
-        case "Bishop":
-            return "n";
-            break;
-        case "Knight":
-            return "j";
-            break;
-        case "Pawn":
-            return "o";
-            break;
+    case "King":
+        return "l";
+    case "Queen":
+        return "w";
+    case "Rook":
+        return "t";
+    case "Bishop":
+        return "n";
+    case "Knight":
+        return "j";
+    case "Pawn":
+        return "o";
     }
     return "No match";
 }

@@ -9,8 +9,7 @@ let lastEnPassant = [];
 let enPassantAllowed = false;
 
 /* Tries to make a move according to the type of piece. Disallows en passant on next move if successful (excludes pawn movement, see pawn function */
-function attemptMovement (startCoords, endCoords, piece,boardArray,wCastling,bCastling,lastEP,ePAllowed) {
-
+function attemptMovement (startCoords, endCoords, piece, boardArray, wCastling, bCastling, lastEP, ePAllowed) {
     wCastlingAllowed = wCastling;
     bCastlingAllowed = bCastling;
     lastEnPassant = lastEP;
@@ -83,8 +82,8 @@ function moveKing (start, end, piece, boardArray) {
 
 /* Helper function to check if intermediate squares are threatened when castling */
 function castlingCheckControl (startCoords, endCoords, checkedPlayer, checkingPlayer, boardArray) {
-    let boardsToTest = [copyBoard(boardArray)];
-    let boardWithoutKing = copyBoard(boardArray);
+    const boardsToTest = [copyBoard(boardArray)];
+    const boardWithoutKing = copyBoard(boardArray);
     boardWithoutKing[startCoords[0]][startCoords[1]] = "Empty";
     const yCoord = endCoords[1];
     const xCoord = endCoords[0];
@@ -92,13 +91,13 @@ function castlingCheckControl (startCoords, endCoords, checkedPlayer, checkingPl
 
     /* Castling Queen's or King's side */
     if (xCoord === 2) {
-        for(let i=1;i<4;i++){
+        for (let i = 1; i < 4; i++) {
             tempBoardVar = copyBoard(boardWithoutKing);
             tempBoardVar[i][yCoord] = checkedPlayer + "King";
             boardsToTest.push(tempBoardVar);
         }
     } else if (xCoord === 6) {
-        for(let i=5;i<7;i++){
+        for (let i = 5; i < 7; i++) {
             tempBoardVar = copyBoard(boardWithoutKing);
             tempBoardVar[i][yCoord] = checkedPlayer + "King";
             boardsToTest.push(tempBoardVar);
@@ -107,8 +106,8 @@ function castlingCheckControl (startCoords, endCoords, checkedPlayer, checkingPl
 
     /* Check if any intermediary squares can be checked */
 
-    for(let i=0;i<boardsToTest.length;i++){
-        if (checkForCheck(checkingPlayer, boardsToTest[i])){
+    for (let i = 0; i < boardsToTest.length; i++) {
+        if (checkForCheck(checkingPlayer, boardsToTest[i])) {
             return true;
         }
     }
@@ -147,7 +146,6 @@ function movePawn (start, end, piece, boardArray) {
 
 function moveRook (start, end, boardArray) {
     if (checkIfLine(start, end, boardArray)) {
-
         return true;
     }
     return false;

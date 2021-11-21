@@ -1,7 +1,7 @@
 import { constructBoard, constructBoardArray } from './modules/constructBoard.js';
 import { placePieces, clearBoard, promotePawn } from './modules/updateBoard.js';
 import { attemptMovement, checkForCheck, checkIfDiagonal, checkForMate } from './modules/movements.js';
-import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay, getPieceFontLetter} from './modules/helperFunctions.js';
+import { compareCoords, copyBoard, minutesAndSeconds, findPieceIndex, capturedPiecesDisplay, getPieceFontLetter } from './modules/helperFunctions.js';
 
 /* Array for storing the board state */
 let boardArray = [];
@@ -10,10 +10,10 @@ let boardArray = [];
 let currentTurn = "W";
 let selectedSquareId = null;
 let promotionCoords;
-let wCastlingAllowed = [true,true];
-let bCastlingAllowed = [true,true];
+let wCastlingAllowed = [true, true];
+let bCastlingAllowed = [true, true];
 let enPassantAllowed = false;
-let lastEnPassant = [0,0];
+let lastEnPassant = [0, 0];
 
 const capturedWhitePieces = [];
 const capturedBlackPieces = [];
@@ -28,7 +28,6 @@ let gameStarted = false;
 let currentlyPromoting = false;
 
 (function () {
-
     /* Construct chessboard and add eventlisteners to squares.
     Squares have IDs of 00 to 77, corresponding to A1 to H8 */
     constructBoard();
@@ -142,19 +141,19 @@ function countDown () {
 }
 /* ACTION FUNCTIONS */
 
-let draggingEvent; 
+let draggingEvent;
 let currentlyDragging = false;
-let firstClick = true; 
+let firstClick = true;
 
 /* Drag and drop and clicking squares - select, deselects or moves */
 
-function mouseDown(event){
+function mouseDown (event) {
     if (!gameStarted) {
         return;
     }
 
-    let targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
-    if(targetPiece.charAt(0) === currentTurn){
+    const targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
+    if (targetPiece.charAt(0) === currentTurn) {
         selectSquare(event);
         currentlyDragging = true;
         document.getElementsByClassName("selected")[0].classList.remove("selected");
@@ -162,19 +161,19 @@ function mouseDown(event){
         document.getElementById('drag-piece').style.display = "inline";
         document.getElementById('drag-piece').innerHTML = getPieceFontLetter(targetPiece);
 
-        switch(currentTurn){
-            case "W":
-                document.getElementById('drag-piece').style.color = "white";
-                break;
-            case "B":
-                document.getElementById('drag-piece').style.color = "black";
-                break;
+        switch (currentTurn) {
+        case "W":
+            document.getElementById('drag-piece').style.color = "white";
+            break;
+        case "B":
+            document.getElementById('drag-piece').style.color = "black";
+            break;
         }
 
-        draggingEvent = document.addEventListener('mousemove', function(event){
+        draggingEvent = document.addEventListener('mousemove', function (event) {
             document.getElementById('drag-piece').style.left = (event.pageX - 38) + "px";
             document.getElementById('drag-piece').style.top = (event.pageY - 40) + "px";
-        });   
+        });
     }
 }
 
@@ -187,8 +186,8 @@ function mouseUp (event) {
         removeEventListener("mousemove", draggingEvent);
         document.getElementById('drag-piece').style.display = "none";
         currentlyDragging = false;
-        if (selectedSquareId === event.target.id){
-            if(!firstClick){
+        if (selectedSquareId === event.target.id) {
+            if (!firstClick) {
                 selectedSquareId = null;
                 event.target.classList.remove("selected");
                 firstClick = true;
@@ -203,20 +202,21 @@ function mouseUp (event) {
 }
 
 /* Highlights possible moves when dragging piece */
-function mouseOver(event){
-    if(currentlyDragging){
+
+function mouseOver (event) {
+    if (currentlyDragging) {
         const selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
         const targetSquare = event.target;
         const targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
         const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
         const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
-        if (targetPiece.charAt(0) !== currentTurn && attemptMovement(startCoords,endCoords,selectedPiece,boardArray,wCastlingAllowed,bCastlingAllowed,lastEnPassant,enPassantAllowed)){
+        if (targetPiece.charAt(0) !== currentTurn && attemptMovement(startCoords, endCoords, selectedPiece, boardArray, wCastlingAllowed, bCastlingAllowed, lastEnPassant, enPassantAllowed)) {
             event.target.classList.add("possible-move");
         }
     }
 }
 
-function mouseOut(event){
+function mouseOut (event) {
     event.target.classList.remove("possible-move");
 }
 
@@ -232,7 +232,7 @@ function selectSquare (event) {
     }
 }
 
-/* Attempt to make a move based on user click */
+/* Attempt to make a move based on user click. If the move is valid, makes board changes based on move */
 function attemptMove (event) {
     if (currentlyPromoting) {
         return;
@@ -249,8 +249,7 @@ function attemptMove (event) {
     /* Tries to move/take another piece */
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
-    if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray,wCastlingAllowed,bCastlingAllowed,lastEnPassant,enPassantAllowed)) {
-
+    if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray, wCastlingAllowed, bCastlingAllowed, lastEnPassant, enPassantAllowed)) {
         /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
         tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
@@ -261,10 +260,10 @@ function attemptMove (event) {
             return false;
         }
 
-        if (selectedPiece === "Wking"){
-            wCastlingAllowed = [false,false];
-        } else if (selectedPiece == "BKing"){
-            bCastlingAllowed = [false,false];
+        if (selectedPiece === "Wking") {
+            wCastlingAllowed = [false, false];
+        } else if (selectedPiece === "BKing") {
+            bCastlingAllowed = [false, false];
         }
 
         /* Special rook-changes if the move is a a valid castle (Checked in attemptMovement()) */
@@ -287,43 +286,43 @@ function attemptMove (event) {
         }
 
         /* Disables castling if rook moves */
-        if (selectedPiece.slice(1) === "Rook"){
-            if (piece.charAt(0) === "W") {
-                if (start[0] === 0) {
+        if (selectedPiece.slice(1) === "Rook") {
+            if (selectedPiece.charAt(0) === "W") {
+                if (startCoords[0] === 0) {
                     wCastlingAllowed[0] = false;
-                } else if (start[0] === 7) {
+                } else if (startCoords[0] === 7) {
                     wCastlingAllowed[1] = false;
                 }
             } else {
-                if (start[0] === 0) {
+                if (startCoords[0] === 0) {
                     bCastlingAllowed[0] = false;
-                } else if (start[0] === 7) {
+                } else if (startCoords[0] === 7) {
                     bCastlingAllowed[1] = false;
                 }
-            }  
+            }
         }
 
         /* Enables/disables en passant */
-        if(selectedPiece === "WPawn" || selectedPiece === "BPawn" ){
-            switch(selectedPiece){
-                case "WPawn":
-                    if(endCoords[1]-startCoords[1]===2){
-                        enPassantAllowed = true;
-                        lastEnPassant = [endCoords[0],endCoords[1]-1];
-                    } else {
-                        enPassantAllowed = false;
-                    }
-                    break;
-                case "BPawn":
-                    if(endCoords[1]-startCoords[1]===-2){
-                        enPassantAllowed = true;
-                        lastEnPassant = [endCoords[0],endCoords[1]+1];
-                    } else {
-                        enPassantAllowed = false;
-                    }
-                    break;
+        if (selectedPiece === "WPawn" || selectedPiece === "BPawn") {
+            switch (selectedPiece) {
+            case "WPawn":
+                if (endCoords[1] - startCoords[1] === 2) {
+                    enPassantAllowed = true;
+                    lastEnPassant = [endCoords[0], endCoords[1] - 1];
+                } else {
+                    enPassantAllowed = false;
+                }
+                break;
+            case "BPawn":
+                if (endCoords[1] - startCoords[1] === -2) {
+                    enPassantAllowed = true;
+                    lastEnPassant = [endCoords[0], endCoords[1] + 1];
+                } else {
+                    enPassantAllowed = false;
+                }
+                break;
             }
-        } else {
+        } else {
             enPassantAllowed = false;
         }
 
