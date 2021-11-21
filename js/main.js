@@ -154,10 +154,21 @@ function mouseDown (event) {
 
     const targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
     if (targetPiece.charAt(0) === currentTurn) {
+        /* firstClick deals with deselecting if the same square is selected twice */
+        if (selectedSquareId !== event.target.id) {
+            firstClick = true;
+        }
+
+        /* Deselects other squares */
+        if (document.getElementsByClassName("selected").length > 0) {
+            document.getElementsByClassName("selected")[0].classList.remove("selected");
+        }
+
         selectSquare(event);
+
+        /* Drag and drop visual */
         currentlyDragging = true;
-        document.getElementsByClassName("selected")[0].classList.remove("selected");
-        event.target.classList.add("selected");
+        event.target.style.opacity = "0.5";
         document.getElementById('drag-piece').style.display = "inline";
         document.getElementById('drag-piece').innerHTML = getPieceFontLetter(targetPiece);
 
