@@ -1,40 +1,41 @@
 import { findPieceIndex, compareCoords, copyBoard } from "./helperFunctions.js";
 
 /* Variables that disable when rook or king is moved castling */
-let wCastleAllowed = [true, true];
-let bCastleAllowed = [true, true];
+let wCastlingAllowed;
+let bCastlingAllowed;
 
 /* Keeps track of possible en passant move */
 let lastEnPassant = [];
 let enPassantAllowed = false;
 
 /* Tries to make a move according to the type of piece. Disallows en passant on next move if successful (excludes pawn movement, see pawn function */
-function attemptMovement (startCoords, endCoords, piece, boardArray) {
+function attemptMovement (startCoords, endCoords, piece,boardArray,wCastling,bCastling,lastEP,ePAllowed) {
+
+    wCastlingAllowed = wCastling;
+    bCastlingAllowed = bCastling;
+    lastEnPassant = lastEP;
+    enPassantAllowed = ePAllowed;
+
     if (piece === "WPawn" || piece === "BPawn") {
         return movePawn(startCoords, endCoords, piece, boardArray);
     } else if (piece === "WQueen" || piece === "BQueen") {
         if (moveQueen(startCoords, endCoords, boardArray)) {
-            enPassantAllowed = false;
             return true;
         }
     } else if (piece === "WBishop" || piece === "BBishop") {
         if (moveBishop(startCoords, endCoords, boardArray)) {
-            enPassantAllowed = false;
             return true;
         }
     } else if (piece === "WRook" || piece === "BRook") {
         if (moveRook(startCoords, endCoords, boardArray, piece)) {
-            enPassantAllowed = false;
             return true;
         }
     } else if (piece === "WKing" || piece === "BKing") {
         if (moveKing(startCoords, endCoords, piece, boardArray)) {
-            enPassantAllowed = false;
             return true;
         }
     } else if (piece === "WKnight" || piece === "BKnight") {
         if (moveKnight(startCoords, endCoords)) {
-            enPassantAllowed = false;
             return true;
         }
     }
@@ -46,31 +47,27 @@ function attemptMovement (startCoords, endCoords, piece, boardArray) {
 function moveKing (start, end, piece, boardArray) {
     /* Checks for valid castling move. Includes checks for threatened intermediary squares via castlingCheckControl(). */
     if (piece === "WKing") {
-        if (compareCoords(end, [2, 0]) && checkIfLine(start, [0, 0], boardArray) && wCastleAllowed[0]) {
+        if (compareCoords(end, [2, 0]) && checkIfLine(start, [0, 0], boardArray) && wCastlingAllowed[0]) {
             if (castlingCheckControl(start, end, "W", "B", boardArray)) {
                 return false;
             }
-            wCastleAllowed = [false, false];
             return true;
-        } else if (compareCoords(end, [6, 0]) && checkIfLine(start, [7, 0], boardArray) && wCastleAllowed[1]) {
+        } else if (compareCoords(end, [6, 0]) && checkIfLine(start, [7, 0], boardArray) && wCastlingAllowed[1]) {
             if (castlingCheckControl(start, end, "W", "B", boardArray)) {
                 return false;
             }
-            wCastleAllowed = [false, false];
             return true;
         }
     } else if (piece === "BKing") {
-        if (compareCoords(end, [2, 7]) && checkIfLine(start, [0, 7], boardArray) && bCastleAllowed[0]) {
+        if (compareCoords(end, [2, 7]) && checkIfLine(start, [0, 7], boardArray) && bCastlingAllowed[0]) {
             if (castlingCheckControl(start, end, "B", "W", boardArray)) {
                 return false;
             }
-            bCastleAllowed = [false, false];
             return true;
-        } else if (compareCoords(end, [6, 7]) && checkIfLine(start, [7, 7], boardArray) & bCastleAllowed[1]) {
+        } else if (compareCoords(end, [6, 7]) && checkIfLine(start, [7, 7], boardArray) & bCastlingAllowed[1]) {
             if (castlingCheckControl(start, end, "B", "W", boardArray)) {
                 return false;
             }
-            bCastleAllowed = [false, false];
             return true;
         }
     }
@@ -80,14 +77,8 @@ function moveKing (start, end, piece, boardArray) {
     const yDiff = Math.abs(start[1] - end[1]);
     if (yDiff > 1 || xDiff > 1) {
         return false;
-    } else {
-        if (piece.charAt(0) === "W") {
-            wCastleAllowed = [false, false];
-        } else {
-            bCastleAllowed = [false, false];
-        }
-        return true;
     }
+    return true;
 }
 
 /* Helper function to check if intermediate squares are threatened when castling */
@@ -138,44 +129,25 @@ function movePawn (start, end, piece, boardArray) {
         startY = 6;
     }
 
-    /* Check double step, then normal step.  */
+    /* Check double step, then normal step, then en passant.  */
     if (boardArray[end[0]][end[1]] === "Empty") {
         if (start[1] === end[1] + (-2 * upOrDown) && start[0] === end[0] && start[1] === startY && checkIfLine(start, end, boardArray)) {
-            lastEnPassant = [end[0], end[1] - upOrDown];
-            enPassantAllowed = true;
             return true;
         } else if (start[1] === end[1] - upOrDown && start[0] === end[0]) {
-            enPassantAllowed = false;
             return true;
         } else if (start[1] === end[1] - upOrDown && Math.abs(start[0] - end[0]) === 1 && compareCoords(lastEnPassant, end) && enPassantAllowed) {
-            enPassantAllowed = false;
             return true;
         }
     } else if (start[1] === end[1] - upOrDown && Math.abs(start[0] - end[0]) === 1) {
         // Check diagonal movement to enemy square.
-        enPassantAllowed = false;
         return true;
     }
     return false;
 }
 
-function moveRook (start, end, boardArray, piece) {
+function moveRook (start, end, boardArray) {
     if (checkIfLine(start, end, boardArray)) {
-        /* Changes castling-bools based on which rook moves
-        if (piece.charAt(0) === "W") {
-            if (start[0] === 0) {
-                wCastleAllowed[0] = false;
-            } else if (start[0] === 7) {
-                wCastleAllowed[1] = false;
-            }
-        } else {
-            if (start[0] === 0) {
-                bCastleAllowed[0] = false;
-            } else if (start[0] === 7) {
-                bCastleAllowed[1] = false;
-            }
-        }
-        */
+
         return true;
     }
     return false;

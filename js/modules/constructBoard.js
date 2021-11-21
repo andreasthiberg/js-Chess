@@ -4,10 +4,13 @@ function constructBoard () {
             const newSquare = document.createElement("div");
             newSquare.id = j.toString() + i.toString();
             document.getElementsByClassName("chessboard")[0].appendChild(newSquare);
+            newSquare.className = "click-square";
+            const newBackgroundSquare = document.createElement("div");
+            document.getElementsByClassName("board-background")[0].appendChild(newBackgroundSquare);
             if ((j % 2 === 0 && i % 2 === 1) || (j % 2 === 1 && i % 2 === 0)) {
-                newSquare.className = "white-square";
+                newBackgroundSquare.className = "white-background-square";
             } else {
-                newSquare.className = "black-square";
+                newBackgroundSquare.className = "black-background-square";
             }
         }
     }

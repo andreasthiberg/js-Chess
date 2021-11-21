@@ -51,6 +51,19 @@ h1 {
 }
 
 /* Chessboard */
+
+
+.board-background {
+    position: absolute;
+    display: grid;
+    width: 600px;
+    height: 600px;
+    border: solid;
+    grid-template-rows: repeat(8,1fr);
+    grid-template-columns: repeat(8,1fr);
+    z-index: -1;
+}
+
 .board-container {
     justify-content: center;
     display: flex;
@@ -68,27 +81,23 @@ h1 {
     grid-template-columns: repeat(8,1fr);
 }
 
-.black-square, .white-square, #drag-piece {
+.click-square, #drag-piece {
     text-align: center;
     vertical-align: middle;
     font-family: chessFont;
     font-size: 60px;    
 }
 
-.black-square {
-    background-color: rgb(70, 96, 67);
+.black-background-square {
+    background-color: #66855d;
 }
 
-.white-square {
-    background-color: rgb(213, 196, 170);
+.white-background-square {
+    background-color: #bec2a9;
 }
 
-.selected.black-square {
-    background-color: rgb(41, 37, 32);
-}
-
-.selected.white-square {
-    background-color: rgb(145, 134, 117);
+.selected, .possible-move {
+    background-color: rgba(26, 65, 194, 0.379) !important;
 }
 
 .checked-square {
@@ -96,12 +105,12 @@ h1 {
 }
 
 .move-square {
-    background-color: rgb(221, 170, 81);
+    background-color: rgba(255, 208, 90, 0.68);
+}
+.selected-transparent {
+    opacity: 0.5;
 }
 
-.possible-move {
-    background-color: rgb(221, 170, 81);
-}
 
 /* Info */
 

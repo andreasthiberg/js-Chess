@@ -10,6 +10,10 @@ let boardArray = [];
 let currentTurn = "W";
 let selectedSquareId = null;
 let promotionCoords;
+let wCastlingAllowed = [true,true];
+let bCastlingAllowed = [true,true];
+let enPassantAllowed = false;
+let lastEnPassant = [0,0];
 
 const capturedWhitePieces = [];
 const capturedBlackPieces = [];
@@ -28,7 +32,7 @@ let currentlyPromoting = false;
     /* Construct chessboard and add eventlisteners to squares.
     Squares have IDs of 00 to 77, corresponding to A1 to H8 */
     constructBoard();
-    const squares = document.querySelectorAll(".white-square,.black-square");
+    const squares = document.getElementsByClassName("click-square");
     for (let i = 0; i < squares.length; i++) {
         squares[i].addEventListener("mousedown", mouseDown);
         squares[i].addEventListener("mouseup", mouseUp);
@@ -139,7 +143,6 @@ function countDown () {
 /* ACTION FUNCTIONS */
 
 let draggingEvent; 
-let draggingHoverEvent;
 let currentlyDragging = false;
 let firstClick = true; 
 
@@ -147,13 +150,15 @@ let firstClick = true;
 
 function mouseDown(event){
     if (!gameStarted) {
-        /* return; */
+        return;
     }
 
     let targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
     if(targetPiece.charAt(0) === currentTurn){
         selectSquare(event);
         currentlyDragging = true;
+        document.getElementsByClassName("selected")[0].classList.remove("selected");
+        event.target.classList.add("selected");
         document.getElementById('drag-piece').style.display = "inline";
         document.getElementById('drag-piece').innerHTML = getPieceFontLetter(targetPiece);
 
@@ -175,9 +180,10 @@ function mouseDown(event){
 
 function mouseUp (event) {
     if (!gameStarted) {
-        /*return;*/
+        return;
     }
     if (currentlyDragging) {
+        document.getElementById(selectedSquareId).style.opacity = "1";
         removeEventListener("mousemove", draggingEvent);
         document.getElementById('drag-piece').style.display = "none";
         currentlyDragging = false;
@@ -196,6 +202,7 @@ function mouseUp (event) {
     }
 }
 
+/* Highlights possible moves when dragging piece */
 function mouseOver(event){
     if(currentlyDragging){
         const selectedPiece = boardArray[selectedSquareId.charAt(0)][selectedSquareId.charAt(1)];
@@ -203,7 +210,7 @@ function mouseOver(event){
         const targetPiece = boardArray[event.target.id.charAt(0)][event.target.id.charAt(1)];
         const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
         const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
-        if (targetPiece.charAt(0) !== currentTurn && attemptMovement(startCoords,endCoords,selectedPiece,boardArray)){
+        if (targetPiece.charAt(0) !== currentTurn && attemptMovement(startCoords,endCoords,selectedPiece,boardArray,wCastlingAllowed,bCastlingAllowed,lastEnPassant,enPassantAllowed)){
             event.target.classList.add("possible-move");
         }
     }
@@ -242,7 +249,8 @@ function attemptMove (event) {
     /* Tries to move/take another piece */
     const startCoords = [parseInt(selectedSquareId.charAt(0)), parseInt(selectedSquareId.charAt(1))];
     const endCoords = [parseInt(targetSquare.id.charAt(0)), parseInt(targetSquare.id.charAt(1))];
-    if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray)) {
+    if (attemptMovement(startCoords, endCoords, selectedPiece, boardArray,wCastlingAllowed,bCastlingAllowed,lastEnPassant,enPassantAllowed)) {
+
         /* Check for invalid move that results in check */
         const tempBoardArray = copyBoard(boardArray);
         tempBoardArray[startCoords[0]][startCoords[1]] = "Empty";
@@ -251,6 +259,12 @@ function attemptMove (event) {
             return false;
         } else if (currentTurn === "W" && checkForCheck("B", tempBoardArray)) {
             return false;
+        }
+
+        if (selectedPiece === "Wking"){
+            wCastlingAllowed = [false,false];
+        } else if (selectedPiece == "BKing"){
+            bCastlingAllowed = [false,false];
         }
 
         /* Special rook-changes if the move is a a valid castle (Checked in attemptMovement()) */
@@ -272,7 +286,46 @@ function attemptMove (event) {
             }
         }
 
-        /* Disables
+        /* Disables castling if rook moves */
+        if (selectedPiece.slice(1) === "Rook"){
+            if (piece.charAt(0) === "W") {
+                if (start[0] === 0) {
+                    wCastlingAllowed[0] = false;
+                } else if (start[0] === 7) {
+                    wCastlingAllowed[1] = false;
+                }
+            } else {
+                if (start[0] === 0) {
+                    bCastlingAllowed[0] = false;
+                } else if (start[0] === 7) {
+                    bCastlingAllowed[1] = false;
+                }
+            }  
+        }
+
+        /* Enables/disables en passant */
+        if(selectedPiece === "WPawn" || selectedPiece === "BPawn" ){
+            switch(selectedPiece){
+                case "WPawn":
+                    if(endCoords[1]-startCoords[1]===2){
+                        enPassantAllowed = true;
+                        lastEnPassant = [endCoords[0],endCoords[1]-1];
+                    } else {
+                        enPassantAllowed = false;
+                    }
+                    break;
+                case "BPawn":
+                    if(endCoords[1]-startCoords[1]===-2){
+                        enPassantAllowed = true;
+                        lastEnPassant = [endCoords[0],endCoords[1]+1];
+                    } else {
+                        enPassantAllowed = false;
+                    }
+                    break;
+            }
+        } else {
+            enPassantAllowed = false;
+        }
 
         /* En passant capture if valid en passant */
         if (checkIfDiagonal(startCoords, endCoords, boardArray) && targetPiece === "Empty") {
@@ -329,7 +382,6 @@ function attemptMove (event) {
         document.getElementById(endCoords.join("")).classList.add("move-square");
 
         lookForCheckOrMate();
-
         return true;
     }
 }

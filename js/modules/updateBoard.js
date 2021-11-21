@@ -69,13 +69,13 @@ function placePieces (boardArray) {
 
 /* Removes extra classes (occupied and piece) from squares */
 function clearBoard () {
-    const whiteSquares = document.getElementsByClassName("white-square");
+    const whiteSquares = document.getElementsByClassName("click-square");
     for (let i = 0; i < whiteSquares.length; i++) {
-        whiteSquares[i].className = "white-square";
+        whiteSquares[i].className = "click-square";
     }
-    const blackSquares = document.getElementsByClassName("black-square");
+    const blackSquares = document.getElementsByClassName("click-square");
     for (let i = 0; i < blackSquares.length; i++) {
-        blackSquares[i].className = "black-square";
+        blackSquares[i].className = "click-square";
     }
 }
 
